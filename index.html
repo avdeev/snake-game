@@ -1,0 +1,107 @@
+<html>
+  <head></head>
+  <body>
+    <canvas id="canvasId" width="450" height="450"></canvas>
+    <script>
+      var canvas = document.getElementById('canvasId');
+      var w = canvas.width;
+      var h = canvas.height;
+      var cw = 10;
+      var dir = 'right';
+      var score = 0;
+
+      var ctx = canvas.getContext('2d');
+
+      var clearField = function() {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, w, h);
+        ctx.strokeStyle = 'black';
+        ctx.strokeRect(0, 0, w, h);
+      }
+
+      var drawSnake = function() {
+        for (var i = 0; i < snake.length; i++) {
+          ctx.fillStyle = 'red';
+          ctx.fillRect(snake[i].x * cw, snake[i].y * cw, cw, cw);
+          ctx.strokeStyle = 'white';
+          ctx.strokeRect(snake[i].x * cw, snake[i].y * cw, cw, cw);
+        }
+      }
+
+      var drawFood = function() {
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(food.x * cw, food.y * cw, cw, cw);
+        ctx.strokeStyle = 'white';
+        ctx.strokeRect(food.x * cw, food.y * cw, cw, cw);
+      }
+
+      var drawScore = function() {
+        ctx.fillStyle = 'blue';
+        ctx.fillText('Score: ' + score, 5, h - 5);
+      }
+
+      var createFood = function() {
+        food = {
+          x: Math.floor(Math.random() * (w / cw)),
+          y: Math.floor(Math.random() * (h / cw)),
+        }
+      }
+
+      var snake = [];
+      for (var i = 4; i >= 0; i--) {
+        snake.push({
+          x: i,
+          y: 0
+        });
+      }
+
+      var food;
+      createFood();
+
+
+      clearField();
+      drawSnake();
+      drawFood();
+      drawScore();
+
+      setInterval(function() {
+        var head = snake[0];
+        var nx = head.x;
+        var ny = head.y;
+
+        if (dir == 'right') nx += 1;
+        if (dir == 'left') nx -= 1;
+        if (dir == 'up') ny -= 1;
+        if (dir == 'down') ny += 1;
+
+        if (nx == food.x && ny == food.y) {
+          var tail = {
+            x: nx,
+            y: ny
+          }
+          score += 1;
+          createFood();
+        } else {
+          var tail = snake.pop();
+          tail.x = nx;
+          tail.y = ny;
+        }
+
+        snake.unshift(tail);
+
+        clearField();
+        drawSnake();
+        drawFood();
+        drawScore();
+      }, 100);
+
+      addEventListener('keydown', function(e) {
+        var key = e.keyCode;
+        if (key == 37) dir = 'left';
+        if (key == 38) dir = 'up';
+        if (key == 39) dir = 'right';
+        if (key == 40) dir = 'down';
+      });
+    </script>
+  </body>
+</html>
